@@ -3,6 +3,7 @@ from sklearn.metrics import mean_squared_error
 from sklearn.linear_model import LinearRegression
 import torch
 import torch.nn as nn
+from sklearn.metrics import r2_score
 
 
 class ModelTester:
@@ -75,6 +76,8 @@ class ModelTester:
             model.eval()
             with torch.no_grad():
                 outputs = model(data)
-                loss = nn.MSELoss()(outputs, target)
-                results[name] = {'loss': loss.item()}
+                outputs_np = outputs.cpu().detach().numpy()
+                print(outputs_np)
+                r2 = r2_score(target, outputs_np)
+                results[name] = {'r2_score': r2}
         return results

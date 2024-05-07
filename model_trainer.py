@@ -14,22 +14,16 @@ class ModelTrainer:
         optimizer = torch.optim.Adam(model.parameters(), lr=learning_rate)
 
         for epoch in range(num_epochs):
-            optimizer.zero_grad()
+            # Forward pass
             outputs = model(self.X_train)
             loss = criterion(outputs, self.y_train)
+
+            # Backward pass and optimization
+            optimizer.zero_grad()
             loss.backward()
             optimizer.step()
 
-            if (epoch + 1) % 10 == 0:
-                print(f'Эпоха [{epoch + 1}/{num_epochs}], Потери: {loss.item():.4f}')
-
-            if self.X_val is not None:
-                with torch.no_grad():
-                    val_outputs = model(self.X_val)
-                    val_loss = criterion(val_outputs, self.y_val)
-
-                if (epoch + 1) % 10 == 0:
-                    print(f'Эпоха [{epoch + 1}/{num_epochs}], Валидационные потери: {val_loss.item():.4f}')
+            print(f'Epoch [{epoch + 1}/{num_epochs}], Loss: {loss.item():.4f}')
 
         self.model = model
 

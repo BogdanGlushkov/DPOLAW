@@ -4,13 +4,14 @@ from data_preprocessor import DataPreprocessor
 from model_trainer import ModelTrainer
 from model_tester import ModelTester
 from model_evaluator import ModelEvaluator
-from models import SimpleModel
+from models import SimpleModel, LinearRegressionModel
 
 
 def main():
     # Загрузка данных
     print("Загрузка данных...")
     data_loader = DataLoader()
+    # data, target = data_loader.load_data()
     data, target = data_loader.load_data()
     print("Данные успешно загружены.")
 
@@ -25,10 +26,10 @@ def main():
     # Создание экземпляра класса ModelTrainer
     model_trainer = ModelTrainer(train_data, train_target, X_val=None, y_val=None)
 
-
     print("Создание моделей...")
     # Создание модели
-    model = SimpleModel()
+    # model = SimpleModel()
+    model = LinearRegressionModel(1,1)
 
     print("Обучение модели...")
     # Обучение модели
@@ -45,6 +46,7 @@ def main():
     test_data_tensor = torch.tensor(test_data.values, dtype=torch.float32)
     test_target_tensor = torch.tensor(test_target.values, dtype=torch.float32)
     test_results = model_tester.test_models({'trained_model': trained_model}, test_data_tensor, test_target_tensor)
+    print(test_results)
 
     print("Модели успешно протестированы.")
 

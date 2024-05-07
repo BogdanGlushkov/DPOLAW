@@ -13,14 +13,14 @@ class DataPreprocessor:
         :param target: Целевая переменная.
         :return: Обработанные данные и целевая переменная.
         """
-        # Обработка пропусков
-        data = self.handle_missing_values(data)
-
-        # Нормализация данных
-        data = self.normalize_data(data)
-
-        # Кодирование категориальных признаков
-        data = self.encode_categorical_features(data)
+        # # Обработка пропусков
+        # data = self.handle_missing_values(data)
+        #
+        # # Нормализация данных
+        # data = self.normalize_data(data)
+        #
+        # # Кодирование категориальных признаков
+        # data = self.encode_categorical_features(data)
 
         # Разделение данных на обучающую и тестовую выборки
         train_data, test_data, train_target, test_target = self.split_data(data, target)

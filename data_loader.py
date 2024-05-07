@@ -1,31 +1,61 @@
 import pandas as pd
-import numpy as np
+import yfinance as yf
+import matplotlib.pyplot as plt
+import seaborn as sns
+from scipy import stats
 
 
 class DataLoader:
     def __init__(self):
         pass
 
-    def load_data(self, data_path=None, num_samples=1000, num_features=10):
+    def load_data(self, data_path=None):
         """
         Загрузка данных из файла или генерация случайных данных.
         :param data_path: Путь к файлу с данными. Если None, то генерируются случайные данные.
-        :param num_samples: Число образцов в данных. Используется при генерации данных.
-        :param num_features: Число признаков в данных. Используется при генерации данных.
         :return: DataFrame с данными и целевой переменной.
         """
-        if data_path is not None:
+        if data_path:
             # Загрузка данных из файла
-            data = pd.read_csv(data_path)
-            target = data.pop('target')
+            df = pd.read_csv(data_path)
+
+            print(df)
+
+            sns.displot(x='Changes', kde=True, data=df)
+            plt.show()
+
+            sns.displot(x='Close', kde=True, data=df)
+            plt.show()
+
+            X = df[['Close']]
+            y = df['Changes']
         else:
-            # Генерация случайных данных
-            data = pd.DataFrame(np.random.rand(num_samples, num_features))
-            target = pd.Series(np.random.rand(num_samples))
+            # Задаем символ акции (тикер) и диапазон дат
+            ticker = 'AAPL'
+            start_date = '2010-01-01'
+            end_date = '2021-12-31'
 
-            data.to_csv('generated_data.csv', index=False)
-            target.to_csv('Data.csv', index=False)
+            # Получаем исторические данные с помощью pandas_datareader
+            df = yf.download(ticker, start=start_date, end=end_date)
 
-        return data, target
+            # Отображаем первые несколько строк данных
+            df = df.reset_index()
+            df['Open'] = df['Open'].astype(float)
+            df['High'] = df['High'].astype(float)
+            df['Low'] = df['Low'].astype(float)
+            df['Close'] = df['Close'].astype(float)
+            df['Volume'] = df['Volume'].astype(float)
+            df.sort_values('Date', ascending=True, inplace=True)
+            df.set_index('Date', inplace=True)
 
+            df['Changes'] = (df['Close'] / df['Close'].shift(1) - 1) * 100
+            df['Changes'] = df['Changes'].fillna(0)
+            print(df)
 
+            df.to_csv('Data.csv', index=False)
+            print(df.Changes.describe())
+
+            X = df[['Close']]
+            y = df['Changes']
+
+        return X, y
